@@ -1,0 +1,214 @@
+body {
+  background-color: #222;
+  color: rgb(222, 49, 49);
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+}
+
+
+#canvas-container {
+  width: 90vw;
+  height: 50vh;
+  margin: 0 auto;
+  position: absolute;
+  left: 45%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  resize: none;
+}
+
+@media (min-width: 768px) {
+  #canvas-container {
+    width: 60vw;
+    height: 60vh;
+  }
+}
+
+@media (min-width: 1024px) {
+  #canvas-container {
+    width: 50vw;
+    height: 70vh;
+  }
+}
+
+
+#canvas {
+  border: 5px solid rgb(255, 255, 255);
+  padding: 0;
+  margin: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  resize: none;
+}
+
+#start-game-btn,
+#join-game-btn {
+  background-color: white;
+  border: none;
+  border-radius: 5px;
+  color: #222;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: 20px;
+  padding: 10px 20px;
+  text-transform: uppercase;
+  transition: background-color 0.2s ease-in-out;
+}
+
+#start-game-btn:hover,
+#join-game-btn:hover {
+  background-color: #ccc;
+}
+
+#name {
+  background-color: #444;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  font-size: 18px;
+  padding: 10px 20px;
+  margin-right: 20px;
+  width: 200px;
+}
+
+#name:focus {
+  outline: none;
+}
+
+#countdown {
+  position: absolute;
+  top: 50%;
+  left: 46%;
+  transform: translate(-50%, -50%);
+  font-size: 200px;
+  font-weight: bold;
+  color: #ccc;
+  text-shadow: 2px 2px 4px #000;
+}
+
+#player-scores {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  height: 40px;
+  padding: 10px 210px;
+  box-sizing: border-box;
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
+}
+
+.player-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.player-name {
+  margin-bottom: 5px;
+  margin-top: -50px;
+}
+
+.score {
+  background-color: rgb(34, 34, 34);
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.chat-container {
+  margin-top: 4%;
+  margin-left: 71%;
+  display: flex;
+  flex-direction: row;
+  min-width: 500px;
+}
+
+.card {
+  width: 450px;
+  background-color: #2b353f;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  margin-right: 10px;
+}
+
+.online-users {
+  width: 50px;
+  max-height: 670px;
+  display: flex;
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding-right: 5%;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  flex-direction: column;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+}
+
+.chat-header {
+  align-items: center;
+  background-color: #020000;
+  color: #490e0e;
+  padding: 10px;
+  font-size: 18px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.chat-window {
+  height: 570px;
+  overflow-y: auto;
+  scroll-behavior: auto;
+}
+
+.message-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.chat-input {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-top: 1px solid #1b1717;
+}
+
+.message-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 5px;
+  font-size: 14px;
+}
+
+.send-button {
+  border: none;
+  outline: none;
+  background-color: #000000;
+  color: #ffffff;
+  font-size: 14px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.send-button:hover {
+  background-color: rgb(0, 0, 0);
+  color: rgb(255, 255, 255);
+  box-shadow: 0 4px 18px 0 rgba(0, 0, 0, 0.25);
+}
+
+.user-photo {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin: 5px auto;
+  margin-left: 10px;
+}
