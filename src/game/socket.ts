@@ -1,5 +1,5 @@
-import { io} from "socket.io-client";
-import {doc} from './game'
+import { io } from "socket.io-client";
+import { doc, user, room } from './game'
 
 export interface Paddle {
     x: number;
@@ -35,16 +35,19 @@ let cnvs: any;
 let interval: any;
 
 export var socket: any = null;
-
-if (!socket) {
-    console.log("test:");
-    socket = io("http://142.93.164.123:3000/game", {
-      withCredentials: true,
-      extraHeaders: {
-        "my-custom-header": "ft_trancedence",
-      },
-      transports: ["websocket", "polling"],
-    });
+export function connect() {
+    if (!socket) {
+        console.log(user);
+        console.log(room);
+        socket = io("http://142.93.164.123:3000/game", {
+            withCredentials: true,
+            query: {
+                user: user,
+                room: room,
+            },
+            transports: ["websocket", "polling"],
+        });
+    }
 }
 
 
@@ -105,8 +108,8 @@ function drawScores(leftPlayer: any, rightPlayer: any) {
 export function render(ctx: any, canvas: any, game: any) {
     if (canvas && ctx && game) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-		ctx.fillStyle = '#352961';
-		ctx.fillRect(0, 0, canvas.width, canvas.height)
+		//ctx.fillStyle = '#352961';
+		//ctx.fillRect(0, 0, canvas.width, canvas.height)
         drawLine(ctx, canvas);
         if (game != null) {
             drawBall(ctx, game.ball);
@@ -127,21 +130,20 @@ export async function gameLoop() {
 	  return;
 	}
 	await update(socket, gameData);
-	render(context, cnvs, gameData);
 }
 
 export function startCallback() {
     isGameStarted = true;
     isPlaying = 1;
-	interval = setInterval(gameLoop, 1000 / 20);
+	interval = setInterval(gameLoop, 1000 / 22);
 }
 
 export function updateCallback(args: any) {
-	gameData = args;
+	render(context, cnvs, args);
 }
 
 export function joinCallback() {
-  interval = setInterval(gameLoop, 1000 / 20);
+  interval = setInterval(gameLoop, 1000 / 22);
 }
 
 export function start(data: any) {
@@ -159,37 +161,38 @@ export function join(data: any) {
 }
 
 export async function sendMessage(message: any){
-/*     const chatbox = doc.getElementsByClassName("message-list")[0];
-    var messageContainer = doc.createElement("div");
-    const messageText = doc.createElement("p");
-    messageText.innerHTML = message;
-    messageContainer.appendChild(messageText);
-    chatbox.appendChild(messageText);
-    chatbox.scrollTop = chatbox.scrollHeight; */
  	if (message !== "") {
-        console.log('test2');
-        await socket.emit('sendMessage', [message]);
+        await socket.emit('sendMessage', [room, message]);
 	}
 };
 
-export async function getMessage(message: any) {
-    console.log('test3');
-    const chatbox = doc.getElementsByClassName("message-list")[0];
-    var messageContainer = doc.createElement("div");
-    const messageText = doc.createElement("p");
-    messageText.innerHTML = message;
+export async function getMessage(message: any[]) {
+    const chatbox = document.getElementsByClassName("message-list")[0];
+    const messageContainer = document.createElement("div");
+    const messageText = document.createElement("p");
     messageContainer.appendChild(messageText);
-    chatbox.appendChild(messageText);
+    if (message[0] === user) {
+        console.log(message);
+        messageText.innerHTML = message[1];
+        messageContainer.classList.add("sent");
+    } else {
+        messageText.innerHTML = message[0] + ": " + message[1];
+        messageContainer.classList.add("receive");
+    }
+    chatbox.appendChild(messageContainer);
     chatbox.scrollTop = chatbox.scrollHeight;
+
 }
 
 
 export function handleKeyUp(key: any) {
-	socket.emit('prUp', [key, gameData.ball, gameData.leftPaddle, gameData.rightPaddle]);
+    if (isGameStarted)
+        socket.emit('prUp', [key, gameData.ball, gameData.leftPaddle, gameData.rightPaddle]);
 
 }
 export function handleKeyDown(key: any) {
-	socket.emit('prDown', [key, gameData.ball, gameData.leftPaddle, gameData.rightPaddle]);
+    if (isGameStarted)
+	    socket.emit('prDown', [key, gameData.ball, gameData.leftPaddle, gameData.rightPaddle]);
 }
 
 
@@ -228,3 +231,7 @@ export function newUser(data: any) {
     if (onlineUsers)
         onlineUsers.appendChild(userPhoto);
 }
+
+export async function handleSendClick(userMessage: any){
+    sendMessage(userMessage);
+};
