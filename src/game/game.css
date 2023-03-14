@@ -40,6 +40,13 @@ body {
   height: 70%;
   border-radius: 16px;
   resize: none;
+/*   border-radius: 5rem; // can be addded by map
+  transition: 0.5s;
+  animation: gradient_301 5s ease infinite;
+  border: double 4px transparent;
+  background-image: linear-gradient(#212121, #212121),  linear-gradient(137.48deg, #ffdb3b 10%,#FE53BB 45%, #8F51EA 67%, #0044ff 87%);
+  background-origin: border-box;
+  background-clip: content-box, border-box; */
 }
 
 .canvas:hover #container-stars {
@@ -106,19 +113,19 @@ body {
   font-size: 200px;
   font-weight: bold;
   color: #ccc;
-  text-shadow: 2px 2px 4px #000;
+  text-shadow: 4px 4px 8px rgb(241, 0, 0);
 }
 
 #countdown2 {
   position: absolute;
-  top: 40%;
-  left: 19.5ex;
+  top: 48%;
+  left: 25ex;
   transform: translate(-50%, -50%);
-  font-size: 120px;
+  font-size: 90px;
   font-weight: bold;
   color: #ccc;
   font-style: italic;
-  text-shadow: 2px 2px 4px #000;
+  text-shadow: 4px 4px 8px rgb(241, 0, 0);
 }
 
 #player-scores {
@@ -156,11 +163,11 @@ body {
 }
 
 .chat-container {
-  margin-top: 11%;
-  margin-left: 71%;
-  display: flex;
-  flex-direction: row;
-  border-radius: 16px;;
+  position: absolute;
+  left: 80%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  resize: none;
 }
 
 .card {
@@ -173,10 +180,11 @@ body {
 }
 
 .online-users {
-  margin-left: -1ex;
-  width: 40px;
-  max-height: 670px;
-  display: flex;
+  margin-left: 55ex;
+  top: 0%;
+  position: absolute;
+  width: 80px;
+  height: 670px;
   border: 1px solid #ccc;
   border-radius: 16px;
   padding-right: 5%;
@@ -185,7 +193,6 @@ body {
   flex-direction: column;
   box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
   overflow-y: auto;
-  overflow-x: hidden;
 
 }
 
@@ -214,18 +221,30 @@ body {
 }
 
 .message-list {
-  font-size: 15px;
-  background-color: transparent;
+  font-size: 17px;
   color: #8F51EA;
-  word-wrap: break-word;
+  margin-left: 2px;
+  border-radius: 12em;
+  padding-left: 12px;
+  padding-right: 12px;
+  text-indent: 8px;
+  display: block;
+  word-break: break-all;
 }
 
 .sent {
   margin-left: 240px;
+  border-radius: 16px;
+  padding-right: 10px;
+  background-color: #1c1c1c;
 }
 
 .received {
-  text-align: left;
+  margin-right: 240px;
+  padding-right: 10px;
+  border-radius: 16px;
+  background-color: #1c1c1c;
+
 }
 
 .chat-input {
@@ -270,9 +289,9 @@ body {
 }
 
 .btn {
-  margin-right: 40%;
-  margin-left: 37%;
-  margin-top: -35%;
+  margin-top: 6%;
+  left: 37%;
+  position: absolute;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -294,10 +313,10 @@ body {
   z-index: -1;
   width: 100%;
   height: 100%;
-  overflow: hidden;
   transition: 0.5s;
-  backdrop-filter: blur(1rem);
+  backdrop-filter: blur(2rem);
   border-radius: 5rem;
+  align-items: center;
 }
 
 strong {
@@ -331,61 +350,43 @@ strong {
   background: rgba(142, 81, 234, 0.704);
 }
 
-.btn:hover #container-stars {
-  z-index: 1;
-  background-color: #212121;
-}
-
-.btn:hover {
-  transform: scale(1.1)
-}
-
-.btn:active {
-  border: double 4px #FE53BB;
-  background-origin: border-box;
-  background-clip: content-box, border-box;
-  animation: none;
-}
-
-.btn:active .circle {
-  background: #FE53BB;
-}
 
 #stars {
   position: relative;
   background: transparent;
-  width: 400rem;
-  height: 400rem;
+  left: 200px;
+  width: 3000px;
+  height: 3000px;
 }
 
 #stars::after {
   content: "";
   position: absolute;
-  top: -10rem;
-  left: -100rem;
+  top: -400px;
+  left: -10%;
   width: 100%;
   height: 100%;
-  animation: animStarRotate 90s linear infinite;
+  animation: animStarRotate 120s linear infinite;
 }
 
 #stars::after {
   background-image: radial-gradient(#ffffff 0.5px, transparent 1%);
-  background-size: 50px 50px;
+  background-size: 120px 120px;
 }
 
 #stars::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: -50%;
-  width: 170%;
-  height: 500%;
+  top: -250px;
+  left: -10%;
+  width: 100%;
+  height: 100%;
   animation: animStar 120s linear infinite;
 }
 
 #stars::before {
   background-image: radial-gradient(#ffffff 0.5px, transparent 1%);
-  background-size: 50px 50px;
+  background-size: 70px 70px;
   opacity: 0.5;
 }
 
