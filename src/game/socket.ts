@@ -39,7 +39,7 @@ export function connect() {
 	if (!socket) {
 		console.log(user);
 		console.log(room);
-		socket = io("http://142.93.164.123:3000/game", {
+		socket = io("http://142.93.164.123:3000/api/game", {
 			withCredentials: true,
 			query: {
 				user: user,
@@ -74,6 +74,15 @@ export function drawBall(ctx: any, ball: any) {
 }
 
 function drawPaddle(paddle: any, ctx: any) {
+	ctx.save();
+	ctx.fillStyle = "rgba(255, 255, 255, 1)";  
+	ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
+	ctx.restore();
+}
+  
+  
+  
+/* function drawPaddle(paddle: any, ctx: any) {
 	var gradient = ctx.createLinearGradient(
 		paddle.x,
 		paddle.y,
@@ -100,7 +109,7 @@ function drawPaddle(paddle: any, ctx: any) {
 
 	ctx.fillStyle = shineGradient;
 	ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
-}
+} */
 
 function drawScores(leftPlayer: any, rightPlayer: any) {
 	const p1Name: any = document.getElementById("player1-name");
@@ -209,7 +218,7 @@ export function startCountdown(data: any) {
 				countdownEl.style.display = "none";
 				isGameStarted = true;
 				isPlaying = 1;
-				interval = setInterval(gameLoop, 1000 / 22);
+				interval = setInterval(gameLoop, 1000 / 60);
 			} else {
 				countdownEl.innerText = countdown;
 				countdown--;

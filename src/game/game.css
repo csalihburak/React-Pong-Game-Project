@@ -40,8 +40,8 @@ body {
   height: 70%;
   border-radius: 16px;
   resize: none;
-/*   border-radius: 5rem; // can be addded by map
-  transition: 0.5s;
+  border-radius: 0rem;
+  /*transition: 0.5s;
   animation: gradient_301 5s ease infinite;
   border: double 4px transparent;
   background-image: linear-gradient(#212121, #212121),  linear-gradient(137.48deg, #ffdb3b 10%,#FE53BB 45%, #8F51EA 67%, #0044ff 87%);
@@ -362,7 +362,7 @@ strong {
 #stars::after {
   content: "";
   position: absolute;
-  top: -400px;
+  top: -800px;
   left: -10%;
   width: 100%;
   height: 100%;
@@ -371,7 +371,7 @@ strong {
 
 #stars::after {
   background-image: radial-gradient(#ffffff 0.5px, transparent 1%);
-  background-size: 120px 120px;
+  background-size: 130px 130px;
 }
 
 #stars::before {
