@@ -48,12 +48,14 @@ export function Game(props: any) {
 		if (button) button.querySelector("strong").textContent = room;
 	}, [button]);
 
-	socket.on("update", updateCallback);
-	socket.on("start", startCallback);
-	socket.on("initalize", utils.start);
-	socket.on("join", joinCallback);
-	socket.on("stop", setZero);
-	socket.on("startGame", startCountdown);
+	socket.on('update', updateCallback);
+	socket.on('start', startCallback);
+	socket.on('initalize', utils.start);
+	socket.on('join', joinCallback);
+	socket.on('userLeft', utils.userLeft);
+	socket.on('startGame', startCountdown);
+	socket.on('playerLeft', setZero);
+	socket.on('endOfGame', utils.end);
 
 	const handleSendClick = () => {
 		utils.sendMessage(userMessage, "txt");
@@ -64,7 +66,6 @@ export function Game(props: any) {
 		if (!canvas) {
 			setCanvas(canvasRef.current);
 		}
-
 		if (canvas != null) {
 			setCtx(canvas.getContext("2d"));
 			if (ctx) utils.drawLine(ctx, canvas);

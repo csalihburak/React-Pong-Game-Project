@@ -1,32 +1,7 @@
 import { io } from "socket.io-client";
 import { doc, user, room } from "./game";
 
-export interface Paddle {
-	x: number;
-	y: number;
-	width: number;
-	height: number;
-	color: string;
-}
-export interface Player {
-	name: string;
-	score: number;
-	paddle: Paddle;
-}
 
-export interface Ball {
-	x: number;
-	y: number;
-	radius: number;
-	color: string;
-}
-
-export interface GameOptions {
-	fps: number;
-	ball: Ball;
-	leftPlayer: Player;
-	rightPlayer: Player;
-}
 export var gameData: any = null;
 export var isGameStarted: boolean = false;
 export let isPlaying: number = 0;
@@ -39,7 +14,7 @@ export function connect() {
 	if (!socket) {
 		console.log(user);
 		console.log(room);
-		socket = io("http://142.93.164.123:3000/api/game", {
+		socket = io("http://142.93.164.123:3000/socket/game", {
 			withCredentials: true,
 			query: {
 				user: user,
@@ -79,10 +54,8 @@ function drawPaddle(paddle: any, ctx: any) {
 	ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
 	ctx.restore();
 }
-  
-  
-  
-/* function drawPaddle(paddle: any, ctx: any) {
+
+function drawPaddle2(paddle: any, ctx: any) {
 	var gradient = ctx.createLinearGradient(
 		paddle.x,
 		paddle.y,
@@ -109,7 +82,7 @@ function drawPaddle(paddle: any, ctx: any) {
 
 	ctx.fillStyle = shineGradient;
 	ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
-} */
+}
 
 function drawScores(leftPlayer: any, rightPlayer: any) {
 	const p1Name: any = document.getElementById("player1-name");
@@ -125,13 +98,16 @@ function drawScores(leftPlayer: any, rightPlayer: any) {
 export function render(ctx: any, canvas: any, game: any) {
 	if (canvas && ctx && game) {
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
-		//ctx.fillStyle = '#352961';
-		//ctx.fillRect(0, 0, canvas.width, canvas.height)
 		drawLine(ctx, canvas);
 		if (game != null) {
 			drawBall(ctx, game.ball);
-			drawPaddle(game.leftPlayer.paddle, ctx);
-			drawPaddle(game.rightPlayer.paddle, ctx);
+			if (game.map === 2) {
+				drawPaddle2(game.leftPlayer.paddle, ctx);
+				drawPaddle2(game.rightPlayer.paddle, ctx);
+			} else {
+				drawPaddle(game.leftPlayer.paddle, ctx);
+				drawPaddle(game.rightPlayer.paddle, ctx);
+			}
 			drawScores(game.leftPlayer, game.rightPlayer);
 		}
 	}
@@ -166,6 +142,12 @@ export function start(data: any) {
 	const countdownEl: any = doc.getElementById("countdown2");
 	countdownEl.innerText = "Waiting for second player...";
 	gameData = data;
+	console.log(gameData);
+	if (gameData.map === 2) {
+		cnvs.classList.add("gradient");
+	} else {
+		cnvs.classList.remove("gradient");
+	}
 	render(context, cnvs, gameData);
 }
 
@@ -201,9 +183,34 @@ export function handleKeyDown(key: any) {
 		]);
 }
 
-export function setZero() {
-	isPlaying = 0;
+export function userLeft(data: any[]) {
+	const onlineUsers = document.querySelector(".online-users");
+	if (onlineUsers) {
+	  const userPhotos : any = onlineUsers.querySelectorAll(".user-photo");
+	  for (let i = 0; i < userPhotos.length; i++) {
+		if (userPhotos[i].src === data[0]) {
+		  onlineUsers.removeChild(userPhotos[i]);
+		  break;
+		}
+	  }
+	}
+}
+
+export function setZero(data: any[]) {
 	clearInterval(interval);
+	const warn: any = document.getElementById("countdown2");
+	isPlaying = 0;
+	let countdown = 5;
+	warn.innerText = data[0] + ", you are redirecting to the lobby";
+	const timer = setInterval(() => {
+		if (countdown === 0) {
+			clearInterval(timer);
+			warn.style.display = "none";
+			window.location.href = "http://localhost:3000/lobby";
+		} else {
+			countdown--;
+		}
+	}, 1000);
 }
 
 export function startCountdown(data: any) {
@@ -227,16 +234,34 @@ export function startCountdown(data: any) {
 	}
 }
 
+export function end(data: any) {
+	const warn: any = doc.getElementById("countdown");
+	warn.innerText = `winner winner chciken dinner user: ${data} has won the game`;
+	let countdown = 6;
+	const timer = setInterval(() => {
+		if (countdown === 0) {
+			clearInterval(timer);
+			warn.style.display = "none";
+			window.location.href = "http://localhost:3000/lobby";
+		} else {
+			countdown--;
+		}
+	}, 1000);
+
+	
+}
+
 export function newUser(data: any) {
 	const userPhoto = document.createElement("img");
 	userPhoto.src = data;
-	userPhoto.alt = "User";
+	userPhoto.alt = "img";
 	userPhoto.className = "user-photo";
-
 	const onlineUsers = document.querySelector(".online-users");
 	if (onlineUsers) onlineUsers.appendChild(userPhoto);
 }
 
+
 export async function handleSendClick(userMessage: any) {
 	sendMessage(userMessage, "txt");
 }
+
