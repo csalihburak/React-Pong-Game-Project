@@ -1,5 +1,5 @@
 import { io } from "socket.io-client";
-import { doc, user, room } from "./game";
+import { doc, gameHash} from "./game";
 
 
 export var gameData: any = null;
@@ -11,14 +11,12 @@ let interval: any;
 
 export var socket: any = null;
 export function connect() {
+	console.log(gameHash);
 	if (!socket) {
-		console.log(user);
-		console.log(room);
 		socket = io("http://142.93.164.123:3000/socket/game", {
 			withCredentials: true,
 			query: {
-				user: user,
-				room: room,
+				gameHash: gameHash,
 			},
 			transports: ["websocket", "polling"],
 		});
@@ -140,14 +138,16 @@ export function joinCallback() {
 
 export function start(data: any) {
 	const countdownEl: any = doc.getElementById("countdown2");
+	const button: any = document.querySelector(".btn");
 	countdownEl.innerText = "Waiting for second player...";
 	gameData = data;
-	console.log(gameData);
 	if (gameData.map === 2) {
 		cnvs.classList.add("gradient");
 	} else {
 		cnvs.classList.remove("gradient");
 	}
+	console.log(gameData.name);
+	if (button) button.querySelector("strong").textContent = gameData.name;
 	render(context, cnvs, gameData);
 }
 
@@ -160,7 +160,7 @@ export function join(data: any) {
 
 export async function sendMessage(message: any, type: any) {
 	if (message !== "") {
-		await socket.emit("sendMessage", [room, type, message]);
+		await socket.emit("sendMessage", [gameHash, type, message]);
 	}
 }
 
@@ -206,7 +206,7 @@ export function setZero(data: any[]) {
 		if (countdown === 0) {
 			clearInterval(timer);
 			warn.style.display = "none";
-			window.location.href = "http://localhost:3000/lobby";
+			window.location.href = "http://142.93.104.99:3000/lobby";
 		} else {
 			countdown--;
 		}

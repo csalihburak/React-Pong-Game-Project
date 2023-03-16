@@ -9,12 +9,11 @@ import "./game.css";
 import "./button.css";
 
 export var doc: any;
-export var room: any;
+export var gameHash: any;
 export var user: any;
 
 export function Game(props: any) {
 	const [userMessage, setUserMessage] = useState("");
-	const button: any = document.querySelector(".btn");
 	const [canvas, setCanvas]: any = useState(null);
 	const [ctx, setCtx] = useState(null);
 	const canvasRef = useRef(null);
@@ -31,8 +30,8 @@ export function Game(props: any) {
 	}
 
 	const params = new URLSearchParams(window.location.search);
-	room = params.get("roomName");
-	user = params.get("user");
+	gameHash = params.get("gameHash");
+	user = "user";
 	connect();
 
 	useEffect(() => {
@@ -44,9 +43,6 @@ export function Game(props: any) {
 		};
 	}, []);
 
-	useEffect(() => {
-		if (button) button.querySelector("strong").textContent = room;
-	}, [button]);
 
 	socket.on('update', updateCallback);
 	socket.on('start', startCallback);
