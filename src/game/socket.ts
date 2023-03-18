@@ -1,5 +1,9 @@
-import { io } from "socket.io-client";
-import { doc, gameHash} from "./game";
+
+import { doc } from './game';
+import { socket } from '../lobby/lobbyUtils/lobbySocket';
+import { gameHash} from './game';
+import { useNavigate} from 'react-router-dom';
+
 
 
 export var gameData: any = null;
@@ -9,19 +13,6 @@ let context: any;
 let cnvs: any;
 let interval: any;
 
-export var socket: any = null;
-export function connect() {
-	console.log(gameHash);
-	if (!socket) {
-		socket = io("http://142.93.164.123:3000/socket/game", {
-			withCredentials: true,
-			query: {
-				gameHash: gameHash,
-			},
-			transports: ["websocket", "polling"],
-		});
-	}
-}
 
 export function drawLine(ctx: any, canvas: any): void {
 	context = ctx;
@@ -99,7 +90,7 @@ export function render(ctx: any, canvas: any, game: any) {
 		drawLine(ctx, canvas);
 		if (game != null) {
 			drawBall(ctx, game.ball);
-			if (game.map === 2) {
+			if (game.map == 2) {
 				drawPaddle2(game.leftPlayer.paddle, ctx);
 				drawPaddle2(game.rightPlayer.paddle, ctx);
 			} else {
@@ -112,14 +103,13 @@ export function render(ctx: any, canvas: any, game: any) {
 }
 
 export async function update(socket: any, game: any) {
-	await socket.emit("update", [game], () => {});
+	if (isGameStarted && isPlaying)
+		await socket.emit("update", [gameHash, game], () => {});
 }
 
 export async function gameLoop() {
-	if (!isGameStarted || gameData == null || !isPlaying) {
-		return;
-	}
-	await update(socket, gameData);
+	if (isGameStarted && isPlaying)
+		await update(socket, gameData);
 }
 
 export function startCallback() {
@@ -137,6 +127,9 @@ export function joinCallback() {
 }
 
 export function start(data: any) {
+	const leftPlayer = document.getElementById('player1-name');
+	const rightPlayer = document.getElementById('player2-name');
+
 	const countdownEl: any = doc.getElementById("countdown2");
 	const button: any = document.querySelector(".btn");
 	countdownEl.innerText = "Waiting for second player...";
@@ -146,7 +139,10 @@ export function start(data: any) {
 	} else {
 		cnvs.classList.remove("gradient");
 	}
-	console.log(gameData.name);
+	if (leftPlayer && rightPlayer) {
+		leftPlayer.innerText = gameData.leftPlayer.name;
+		rightPlayer.innerText = gameData.leftPlayer.name;
+	}
 	if (button) button.querySelector("strong").textContent = gameData.name;
 	render(context, cnvs, gameData);
 }
@@ -166,21 +162,11 @@ export async function sendMessage(message: any, type: any) {
 
 export function handleKeyUp(key: any) {
 	if (isGameStarted)
-		socket.emit("prUp", [
-			key,
-			gameData.ball,
-			gameData.leftPaddle,
-			gameData.rightPaddle,
-		]);
+		socket.emit("prUp", [ gameHash, key ]);
 }
 export function handleKeyDown(key: any) {
 	if (isGameStarted)
-		socket.emit("prDown", [
-			key,
-			gameData.ball,
-			gameData.leftPaddle,
-			gameData.rightPaddle,
-		]);
+		socket.emit("prDown", [ gameHash, key,]);
 }
 
 export function userLeft(data: any[]) {
@@ -196,7 +182,7 @@ export function userLeft(data: any[]) {
 	}
 }
 
-export function setZero(data: any[]) {
+export function SetZero(data: any[]) {
 	clearInterval(interval);
 	const warn: any = document.getElementById("countdown2");
 	isPlaying = 0;
@@ -206,7 +192,6 @@ export function setZero(data: any[]) {
 		if (countdown === 0) {
 			clearInterval(timer);
 			warn.style.display = "none";
-			window.location.href = "http://142.93.104.99:3000/lobby";
 		} else {
 			countdown--;
 		}
@@ -214,9 +199,9 @@ export function setZero(data: any[]) {
 }
 
 export function startCountdown(data: any) {
-	const countdownEl: any = doc.getElementById("countdown");
-	const warn: any = doc.getElementById("countdown2");
+	const warn: any = document.getElementById("countdown2");
 	warn.style.display = "none";
+	const countdownEl: any = doc.getElementById("countdown");
 	let countdown = 5;
 	if (countdownEl) {
 		const timer = setInterval(() => {
@@ -234,20 +219,28 @@ export function startCountdown(data: any) {
 	}
 }
 
-export function end(data: any) {
-	const warn: any = doc.getElementById("countdown");
-	warn.innerText = `winner winner chciken dinner user: ${data} has won the game`;
+export async function End(data: any, callback: any) {
+	isPlaying = 0;
+	isGameStarted = false;
+	setInterval(gameLoop, 0);
+	clearInterval(interval);
+	const warn: any = doc.getElementById("countdown2");
+	warn.style.display = "block";
+	warn.innerText = `Congratulations to the winner(${data}), and great effort by the loser!`;
 	let countdown = 6;
+
 	const timer = setInterval(() => {
 		if (countdown === 0) {
 			clearInterval(timer);
 			warn.style.display = "none";
-			window.location.href = "http://localhost:3000/lobby";
+			socket.close();
+			window.location.reload();
+			callback();
 		} else {
 			countdown--;
 		}
 	}, 1000);
-
+ 	
 	
 }
 

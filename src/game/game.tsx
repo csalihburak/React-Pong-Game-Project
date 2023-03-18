@@ -1,18 +1,22 @@
-import { socket, joinCallback, updateCallback, startCallback, setZero, startCountdown, newUser, connect } from "./socket";
+import { joinCallback, updateCallback, startCallback, SetZero, startCountdown, newUser } from "./socket";
+import { socket } from '../lobby/lobbyUtils/lobbySocket';
 import { useState, useRef, useEffect } from "react";
 import { getMessage, onDroped } from "./gameUtils";
 import { UploadOutlined } from "@ant-design/icons";
-import Dropzone from "react-dropzone";
 import * as utils from "./socket";
-import { Button } from "antd";
 import "./game.css";
-import "./button.css";
+import Dropzone from 'react-dropzone';
+import { useNavigate } from 'react-router-dom';
 
 export var doc: any;
-export var gameHash: any;
 export var user: any;
+export let gameHash: any;
+
 
 export function Game(props: any) {
+	const navigate = useNavigate();
+	const params = new URLSearchParams(window.location.search);
+	gameHash = params.get("gameHash");
 	const [userMessage, setUserMessage] = useState("");
 	const [canvas, setCanvas]: any = useState(null);
 	const [ctx, setCtx] = useState(null);
@@ -29,17 +33,20 @@ export function Game(props: any) {
 		}
 	}
 
-	const params = new URLSearchParams(window.location.search);
-	gameHash = params.get("gameHash");
-	user = "user";
-	connect();
+	async function hadnleEndOfGame(data: any) {
+		utils.End(data, () => {
+			navigate('/Lobby');
+		});
+	}
 
 	useEffect(() => {
 		socket.on("newUser", newUser);
 		socket.on("getMessage", getMessage);
+		socket.on('endOfGame', hadnleEndOfGame)
 		return () => {
 			socket.off("getMessage", getMessage);
-			socket.off("getMessage", getMessage);
+			socket.off("newUser", newUser);
+			socket.off('endOfGame', hadnleEndOfGame);
 		};
 	}, []);
 
@@ -50,8 +57,7 @@ export function Game(props: any) {
 	socket.on('join', joinCallback);
 	socket.on('userLeft', utils.userLeft);
 	socket.on('startGame', startCountdown);
-	socket.on('playerLeft', setZero);
-	socket.on('endOfGame', utils.end);
+	//socket.on('playerLeft', SetZero);
 
 	const handleSendClick = () => {
 		utils.sendMessage(userMessage, "txt");
@@ -112,9 +118,9 @@ export function Game(props: any) {
 								0
 							</div>
 						</div>
-					</div>
+					</div>				
 				</div>
-				<div className="chat-container">
+					<div className="chat-container">
 					<div className="card">
 						<label className="chat-header"> Chat </label>
 						<div className="chat-window">
@@ -136,9 +142,9 @@ export function Game(props: any) {
 										<section>
 											<div {...getRootProps()}>
 												<input {...getInputProps()} />
-												<Button>
+												<button>
 													<UploadOutlined />
-												</Button>
+												</button>
 											</div>
 										</section>
 									)}
@@ -151,8 +157,8 @@ export function Game(props: any) {
 								Send
 							</button>
 						</div>
-					</div>
 					<div className="online-users"></div>
+					</div>
 				</div>
 			</div>
 			<div>
