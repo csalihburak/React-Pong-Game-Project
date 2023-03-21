@@ -1,15 +1,14 @@
-import { user } from "./game";
 import { sendMessage } from "./socket";
 
 export async function getMessage(message: any[]) {
 	const chatbox = document.getElementsByClassName("message-list")[0];
 	const messageContainer = document.createElement("div");
 	const messageText = document.createElement("p");
+	messageText.style.fontSize = "16px";
 	const isFile = message[1] === "file";
-	const isSent = message[0] === user;
+	const isSent = message[3] === localStorage.getItem('sessionToken');
 
 	messageContainer.appendChild(messageText);
-
 	if (isFile) {
 		const image = document.createElement("img");
 		image.alt = "image";

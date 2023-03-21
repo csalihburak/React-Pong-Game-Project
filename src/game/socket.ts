@@ -1,8 +1,7 @@
 
-import { doc } from './game';
 import { socket } from '../lobby/lobbyUtils/lobbySocket';
 import { gameHash} from './game';
-import { useNavigate} from 'react-router-dom';
+import { doc } from './game';
 
 
 
@@ -90,7 +89,7 @@ export function render(ctx: any, canvas: any, game: any) {
 		drawLine(ctx, canvas);
 		if (game != null) {
 			drawBall(ctx, game.ball);
-			if (game.map == 2) {
+			if (game.map === 2) {
 				drawPaddle2(game.leftPlayer.paddle, ctx);
 				drawPaddle2(game.rightPlayer.paddle, ctx);
 			} else {
@@ -103,8 +102,9 @@ export function render(ctx: any, canvas: any, game: any) {
 }
 
 export async function update(socket: any, game: any) {
-	if (isGameStarted && isPlaying)
+	if (isGameStarted && isPlaying) {
 		await socket.emit("update", [gameHash, game], () => {});
+	}
 }
 
 export async function gameLoop() {
@@ -115,24 +115,26 @@ export async function gameLoop() {
 export function startCallback() {
 	isGameStarted = true;
 	isPlaying = 1;
-	interval = setInterval(gameLoop, 1000 / 60);
+	interval = setInterval(gameLoop, 1000 / 30);
 }
 
 export function updateCallback(args: any) {
 	render(context, cnvs, args);
 }
 
-export function joinCallback() {
-	interval = setInterval(gameLoop, 1000 / 60);
+export function joinCallback(data: any) {
+	interval = setInterval(gameLoop, 1000 / 30);
 }
 
 export function start(data: any) {
 	const leftPlayer = document.getElementById('player1-name');
 	const rightPlayer = document.getElementById('player2-name');
 
-	const countdownEl: any = doc.getElementById("countdown2");
+	if (data.isStarted === 0) {
+		const countdownEl: any = doc.getElementById("countdown3");
+		countdownEl.innerText = "Waiting for second player...";
+	}
 	const button: any = document.querySelector(".btn");
-	countdownEl.innerText = "Waiting for second player...";
 	gameData = data;
 	if (gameData.map === 2) {
 		cnvs.classList.add("gradient");
@@ -147,16 +149,9 @@ export function start(data: any) {
 	render(context, cnvs, gameData);
 }
 
-export function join(data: any) {
-	socket.emit("join", [data], (data: any) => {
-		gameData = data;
-		render(context, cnvs, data);
-	});
-}
-
 export async function sendMessage(message: any, type: any) {
 	if (message !== "") {
-		await socket.emit("sendMessage", [gameHash, type, message]);
+		socket.emit("sendMessage", [gameHash, type, message, localStorage.getItem('sessionToken')]);
 	}
 }
 
@@ -199,7 +194,7 @@ export function SetZero(data: any[]) {
 }
 
 export function startCountdown(data: any) {
-	const warn: any = document.getElementById("countdown2");
+	const warn: any = document.getElementById("countdown3");
 	warn.style.display = "none";
 	const countdownEl: any = doc.getElementById("countdown");
 	let countdown = 5;
@@ -210,7 +205,7 @@ export function startCountdown(data: any) {
 				countdownEl.style.display = "none";
 				isGameStarted = true;
 				isPlaying = 1;
-				interval = setInterval(gameLoop, 1000 / 60);
+				interval = setInterval(gameLoop, 1000 / 30);
 			} else {
 				countdownEl.innerText = countdown;
 				countdown--;
@@ -233,9 +228,10 @@ export async function End(data: any, callback: any) {
 		if (countdown === 0) {
 			clearInterval(timer);
 			warn.style.display = "none";
-			socket.close();
+			socket.emit('endGame', gameHash, () => {});
 			window.location.reload();
 			callback();
+			socket.close();
 		} else {
 			countdown--;
 		}
@@ -244,13 +240,22 @@ export async function End(data: any, callback: any) {
 	
 }
 
-export function newUser(data: any) {
-	const userPhoto = document.createElement("img");
-	userPhoto.src = data;
-	userPhoto.alt = "img";
-	userPhoto.className = "user-photo";
+export function newUser(photos: any[]) {
 	const onlineUsers = document.querySelector(".online-users");
-	if (onlineUsers) onlineUsers.appendChild(userPhoto);
+
+	if (onlineUsers) {
+	  while (onlineUsers.firstChild) {
+		onlineUsers.removeChild(onlineUsers.firstChild);
+	  }
+	}
+  
+	for (const photo of photos) {
+	  const userPhoto = document.createElement("img");
+	  userPhoto.src = photo;
+	  userPhoto.alt = "img";
+	  userPhoto.className = "user-photo";
+	  if (onlineUsers) onlineUsers.appendChild(userPhoto);
+	}
 }
 
 

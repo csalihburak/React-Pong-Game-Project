@@ -1,17 +1,15 @@
-import { joinCallback, updateCallback, startCallback, SetZero, startCountdown, newUser } from "./socket";
-import { socket } from '../lobby/lobbyUtils/lobbySocket';
+import { joinCallback, updateCallback, startCallback, startCountdown, newUser } from "./socket";
+import { socket } from "../lobby/lobbyUtils/lobbySocket";
 import { useState, useRef, useEffect } from "react";
 import { getMessage, onDroped } from "./gameUtils";
 import { UploadOutlined } from "@ant-design/icons";
 import * as utils from "./socket";
 import "./game.css";
-import Dropzone from 'react-dropzone';
-import { useNavigate } from 'react-router-dom';
+import Dropzone from "react-dropzone";
+import { useNavigate } from "react-router-dom";
 
 export var doc: any;
-export var user: any;
 export let gameHash: any;
-
 
 export function Game(props: any) {
 	const navigate = useNavigate();
@@ -35,29 +33,33 @@ export function Game(props: any) {
 
 	async function hadnleEndOfGame(data: any) {
 		utils.End(data, () => {
-			navigate('/Lobby');
+			navigate("/Lobby");
 		});
 	}
+
+	window.addEventListener("popstate", handlePopstate => {
+		socket.emit('endGame', gameHash, () => {
+			return;
+		}); 
+	});
 
 	useEffect(() => {
 		socket.on("newUser", newUser);
 		socket.on("getMessage", getMessage);
-		socket.on('endOfGame', hadnleEndOfGame)
+		socket.on("endOfGame", hadnleEndOfGame);
 		return () => {
 			socket.off("getMessage", getMessage);
 			socket.off("newUser", newUser);
-			socket.off('endOfGame', hadnleEndOfGame);
+			socket.off("endOfGame", hadnleEndOfGame);
 		};
-	}, []);
+	});
 
-
-	socket.on('update', updateCallback);
-	socket.on('start', startCallback);
-	socket.on('initalize', utils.start);
-	socket.on('join', joinCallback);
-	socket.on('userLeft', utils.userLeft);
-	socket.on('startGame', startCountdown);
-	//socket.on('playerLeft', SetZero);
+	socket.on("update", updateCallback);
+	socket.on("start", startCallback);
+	socket.on("initalize", utils.start);
+	socket.on("join", joinCallback);
+	socket.on("userLeft", utils.userLeft);
+	socket.on("startGame", startCountdown);
 
 	const handleSendClick = () => {
 		utils.sendMessage(userMessage, "txt");
@@ -85,7 +87,7 @@ export function Game(props: any) {
 			window.removeEventListener("keydown", utils.handleKeyDown);
 			window.removeEventListener("keyup", utils.handleKeyDown);
 		};
-	}, [canvas, ctx]);
+	}, [ctx, canvas]);
 
 	return (
 		<div>
@@ -118,9 +120,9 @@ export function Game(props: any) {
 								0
 							</div>
 						</div>
-					</div>				
+					</div>
 				</div>
-					<div className="chat-container">
+				<div className="chat-container">
 					<div className="card">
 						<label className="chat-header"> Chat </label>
 						<div className="chat-window">
@@ -157,7 +159,7 @@ export function Game(props: any) {
 								Send
 							</button>
 						</div>
-					<div className="online-users"></div>
+						<div className="online-users"></div>
 					</div>
 				</div>
 			</div>
@@ -172,6 +174,7 @@ export function Game(props: any) {
 			</div>
 			<div id="countdown"></div>
 			<div id="countdown2"></div>
+			<div id="countdown3"></div>
 		</div>
 	);
 }
