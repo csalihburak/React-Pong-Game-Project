@@ -6,7 +6,7 @@ Use the paddle to bounce the ball back and forth.
 The player who lets the ball bounce twice on their side loses.
 Controls:
 ```
-  Player 1 (left): A/W to move up/down
+  Player 1 (left): W/S to move up/down
   Player 2 (right): Arrow keys to move up/down
 ```
 ## Installation
