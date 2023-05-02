@@ -1,8 +1,8 @@
 # React Ping Pong Game
 This is a simple Ping Pong game built with React.
 
-[[./public/images/screenshot.jpg|ALT TEXT]]
-[[/public/images/screenshot.jpg]]
+[[./public/screenshot.jpg|ALT TEXT]]
+[[/public/screenshot.jpg]]
 
 # How to Play
 Use the paddle to bounce the ball back and forth.
