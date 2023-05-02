@@ -1,6 +1,8 @@
 # React Ping Pong Game
 This is a simple Ping Pong game built with React.
 
+[[/public/images/image.ext|ALT TEXT]]
+
 # How to Play
 Use the paddle to bounce the ball back and forth.
 The player who lets the ball bounce twice on their side loses.
